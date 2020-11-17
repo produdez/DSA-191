@@ -1,0 +1,139 @@
+node<T>* insert(node<T>*& top, node<T>* newNode, bool& taller)
+{
+	if (top == NULL)
+	{
+		top = newNode;
+		taller = true;
+		return top;
+	}
+	if (newNode->data < top->data) //insert left
+	{
+		top->left=insert(top->left, newNode, taller);
+		if (taller)
+		{
+			if (top->balance == -1) // left
+			{
+				leftBalance(top, taller);
+			}
+			else if (top->balance == 0) //equal
+			{
+				top->balance = -1;
+			}
+			else //right
+			{
+				top->balance = 0;
+				taller = false;
+			}
+		}
+	}
+	else //insert right
+	{
+		top->right=insert(top->right, newNode, taller);
+		if (taller)
+		{
+			if (top->balance == 1) // right
+			{
+				rightBalance(top, taller);
+			}
+			else if (top->balance == 0) //equal
+			{
+				top->balance = 1;
+			}
+			else //left
+			{
+				top->balance = 0;
+				taller = false;
+			}
+		}
+	}
+	return top;
+}
+
+node<T>* leftBalance(node<T>*& top, bool& taller)
+{
+	node<T>* leftTree = top->left;
+	if (leftTree->balance == -1) // case left left
+	{
+		top=rotateRight(top);
+		taller = false;
+		top->balance = 0;
+		top->right->balance = 0;
+	}
+	else //case left right
+	{
+		node<T>* rightTree = leftTree->right;
+		if (rightTree->balance == -1)
+		{
+			top->balance = 1;
+			leftTree->balance = 0;
+		}
+		else if (rightTree->balance == 0)
+		{
+			leftTree->balance = 0;
+		}
+		else //RH
+		{
+			top->balance = 0;
+			leftTree->balance = -1;
+		}
+
+		top->balance = 0;
+		top->left = rotateLeft(leftTree);
+		top = rotateRight(top);
+		taller = false;
+	}
+	return top;
+}
+
+node<T>* rightBalance(node<T>*& top, bool& taller)
+{
+	node<T>* rightTree = top->right;
+	if (rightTree->balance == 1) // case right right
+	{
+		top=rotateLeft(top);
+		top->balance = 0;
+		top->left->balance = 0;
+		taller = false;
+	}
+	else // case right left
+	{
+		node<T>* leftTree = rightTree->left;
+		if (leftTree->balance == 1)
+		{
+			top->balance = -1;
+			rightTree->balance = 0;
+		}
+		else if (leftTree->balance == 0)
+		{
+			rightTree->balance = 0;
+		}
+		else
+		{
+			top->balance = 0;
+			rightTree->balance = 1;
+		}
+		top->balance = 0;
+		top->right = rotateRight(rightTree);
+		top = rotateLeft(top);
+		taller = false;
+	}
+	return	top;
+}
+
+
+node<T>* rotateLeft(node<T>*& top)
+{
+	node<T>* temp = top->right;
+	top->right = temp->left;
+	temp->left = top;
+	return temp;
+}
+
+
+node<T>* rotateRight(node<T>*& top)
+{
+	node<T>* temp = top->left;
+	top->left = temp->right;
+	temp->right = top;
+	return temp;
+}

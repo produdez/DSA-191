@@ -1,0 +1,9 @@
+.vscode/
+Debug/
+*.sln
+*vcxproj*
+*.exe
+*.idb
+*.pdb
+VSCODE/
+.vs/
